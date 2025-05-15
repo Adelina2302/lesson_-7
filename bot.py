@@ -1,13 +1,7 @@
 import os
-
 from dotenv import load_dotenv
 from pytimeparse import parse
 import ptbot
-
-
-load_dotenv()
-
-TG_TOKEN = os.getenv('TOKEN')
 
 
 def wait(bot, chat_id, message):
@@ -16,7 +10,7 @@ def wait(bot, chat_id, message):
         bot.send_message(chat_id, "Не понял время. Напиши, например: 5s, 2m, 1.5 minutes")
         return
 
-    message_id = bot.send_message(chat_id, "Осталось: {} секунд".format(seconds))
+    message_id = bot.send_message(chat_id, f"Осталось: {seconds} секунд")
     bot.create_countdown(
         seconds,
         notify_progress,
@@ -30,7 +24,7 @@ def wait(bot, chat_id, message):
 def notify_progress(secs_left, chat_id, message_id, total, bot):
     if secs_left > 0:
         progress = render_progressbar(total, total - secs_left)
-        bot.update_message(chat_id, message_id, "Осталось: {} секунд\n{}".format(secs_left, progress))
+        bot.update_message(chat_id, message_id, f"Осталось: {secs_left} секунд\n{progress}")
     else:
         bot.update_message(chat_id, message_id, "Время вышло!")
 
@@ -40,11 +34,13 @@ def render_progressbar(total, iteration, length=30, fill='█', zfill='░'):
     percent = "{0:.1f}".format(100 * (iteration / total))
     filled_length = int(length * iteration // total)
     pbar = fill * filled_length + zfill * (length - filled_length)
-    return '|{}| {}%'.format(pbar, percent)
+    return f'|{pbar}| {percent}%'
 
 
 def main():
-    bot = ptbot.Bot(TG_TOKEN)
+    load_dotenv()
+    tg_token = os.getenv('TOKEN')
+    bot = ptbot.Bot(tg_token)
 
     def handle_message(chat_id, message):
         wait(bot, chat_id, message)
