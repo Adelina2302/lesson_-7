@@ -37,15 +37,16 @@ def render_progressbar(total, iteration, length=30, fill='█', zfill='░'):
     return f'|{pbar}| {percent}%'
 
 
+def handle_message(bot, chat_id, message):
+    wait(bot, chat_id, message)
+
+
 def main():
     load_dotenv()
     tg_token = os.getenv('TOKEN')
     bot = ptbot.Bot(tg_token)
 
-    def handle_message(chat_id, message):
-        wait(bot, chat_id, message)
-
-    bot.reply_on_message(handle_message)
+    bot.reply_on_message(lambda chat_id, message: handle_message(bot, chat_id, message))
     bot.run_bot()
 
 
